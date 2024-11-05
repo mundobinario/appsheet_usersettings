@@ -1,0 +1,31 @@
+SLICE AvisosSinLeer
+IN(ANY(LIST(USERSETTINGS("Usuario"))), [AvisoPara])
+
+
+AvisoPara
+SELECT
+(
+    Usuarios[UsuarioID]
+    ,[UsuarioStatus]=true
+)
+
+AvisoStatusVirtual
+IF(
+ IN(ANY(LIST(USERSETTINGS("Usuario"))), [Related AvisosLeidos][UsuarioID]),
+ "Leídos",
+ "Sin Leer"
+)
+
+FORMATOAvisoLeido
+[AvisoStatusVirtual]="Leído"
+
+
+FORMATOAvisoSinLeer
+[AvisoStatusVirtual]="Sin Leer"
+
+ACTIONAvisoMarcarLeido
+USERSETTINGS("Usuario")
+NOW()
+
+ACTIONMostrarAviso
+LINKTOROW([AvisoID], "AvisosSinLeer_Detail")
