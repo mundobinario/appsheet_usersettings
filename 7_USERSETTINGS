@@ -1,0 +1,92 @@
+agregar_tienda_a_ruta
+
+TiendaID
+ANY
+(
+  SELECT
+  (
+    Tiendas[TiendaID]
+    ,AND
+    (
+    NOT
+    (
+        IN
+        (
+          [TiendaID]
+          ,SELECT
+          (
+            Rutas[TiendaID]
+            ,AND
+            (
+               [UsuarioID]=USERSETTINGS("Usuario")
+               ,DATE([RutaFecha]) = TODAY()
+            )
+          )
+        )
+      )
+      ,IN
+      (
+         [ZonaID]
+         ,SELECT
+         (
+             UsuariosZonas[ZonaID]
+            ,AND
+            (
+                 [UsuarioID]=USERSETTINGS("Usuario")
+                 ,CONTAINS
+                 (
+                    [DiaSemana]
+                    ,SWITCH
+                    (
+                       WEEKDAY(TODAY())
+                       ,2, 'L'
+                       ,3, 'M'
+                       ,4, 'X'
+                       ,5, 'J'
+                       ,6, 'V'
+                       ,7, 'S'
+                       ,'D'
+                    )
+                 )
+              )
+           )
+        )
+      )
+   )
+)
+
+
+BOT
+STEPCrearRuta
+Referenced rows
+SELECT(
+  Tiendas[TiendaID]
+  ,AND(
+    IN(
+      [ZonaID]
+      ,SELECT(
+        UsuariosZonas[ZonaID]
+        ,AND
+        (
+           [UsuarioID]=[_THISROW].[UsuarioID]
+           ,CONTAINS(
+             [DiaSemana]
+            ,SWITCH
+            (
+              WEEKDAY(TODAY())
+              ,2, 'L'
+              ,3, 'M'
+              ,4, 'X'
+              ,5, 'J'
+              ,6, 'V'
+              ,7, 'S'
+              ,'D'
+            )
+          )
+        )
+      )
+    )
+    ,TRUE
+  )
+  
+)
